@@ -4,7 +4,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
-    private static final String Base_URL = "http://127.0.0.1/applogindanregisterandandroid/";
+    private static final String Base_URL = "https://lazykoding.com/logreg/ ";
     private static Retrofit retrofit;
 
     public static Retrofit getClient(){

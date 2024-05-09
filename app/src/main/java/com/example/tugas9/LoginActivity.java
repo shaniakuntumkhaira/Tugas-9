@@ -2,6 +2,7 @@ package com.example.tugas9;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,7 +17,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.tugas9.api.ApiClient;
 import com.example.tugas9.api.ApiInterface;
-import com.example.tugas9.model.login.Login;
 import com.example.tugas9.model.login.LoginData;
 
 import retrofit2.Call;
@@ -72,28 +72,30 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginCall.enqueue(new Callback<LoginData>() {
             @Override
             public void onResponse(Call<LoginData> call, Response<LoginData> response) {
-                if(response.body() != null && response.isSuccessful() && response.body().isStatus()){
-
+                if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
                     sessionManager = new SessionManager(LoginActivity.this);
                     LoginData loginData = response.body().getData();
                     sessionManager.createLoginSession(loginData);
 
                     Toast.makeText(LoginActivity.this, response.body().getData().getName(), Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                }else {
-                    Toast.makeText(LoginActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    moveToNextActivity(); // Panggil method untuk pindah ke MainActivity setelah login berhasil
+                } else {
+                    Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<LoginData> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Login failed: " + t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("LoginActivity", "Login failed: " + t.getLocalizedMessage()); // Tambahkan logging disini
             }
-        });
 
-        Intent intent = new Intent(this, MainActivity.class);
+        });
+    }
+
+    private void moveToNextActivity() {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
+        finish(); // Menutup LoginActivity agar tidak dapat kembali menggunakan tombol back
     }
 }
